@@ -7,7 +7,7 @@
     <div class="login-box">
       <div class="logo-box">
         <div class="right">
-          <div class="sys-name">海林OJ后台管理</div>
+          <div class="sys-name">海林OJ后台管理平台</div>
           <div class="sys-sub-name">帮助100万学⽣训练</div>
         </div>
       </div>
@@ -47,7 +47,7 @@ async function loginFun(){
   try{
     const loginResult = await loginService(userAccount.value, password.value)
     console.log("登录结果: ", loginResult);
-    router.push('/oj/system')
+    router.push('/oj/layout')
     setToken(loginResult.data)
   }catch(error) {
     console.log("登录结果: ", error);
