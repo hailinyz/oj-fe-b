@@ -19,8 +19,7 @@
 			</el-form-item>
 			<el-form-item label="题目内容:">
 				<div class="editor">
-					<quill-editor placeholder="请输入题目内容" v-model:content="formQuestion.content">
-					</quill-editor>
+					<quill-editor placeholder="请输入题目内容" v-model:content="formQuestion.content" content-type="html"></quill-editor>
 				</div>
 			</el-form-item>
 			<el-form-item label="题目用例:">
@@ -28,10 +27,10 @@
 					placeholder="请输入题目用例"></el-input>
 			</el-form-item>
 			<el-form-item label="默认代码块:">
-        <code-editor @update:value="handleEditorContent"></code-editor>
+        <code-editor @update:value="handleEditorContent" ref="defaultCodeRef"></code-editor>
 			</el-form-item>
 			<el-form-item label="main函数:">
-				<code-editor @update:value="handleEditorMainFunc"></code-editor>
+				<code-editor @update:value="handleEditorMainFunc" ref="mainFuncRef"></code-editor>
 			</el-form-item>
 			<el-form-item>
 				<el-button class="question-button" type="primary" plain @click="onSubmit()">发布</el-button>
@@ -49,10 +48,11 @@ import CodeEditor from '@/components/CodeEditor.vue'
 import{ reactive, ref } from 'vue'
 import Selector from '@/components/questionSelector.vue'
 import { ElMessage } from 'element-plus'
-import { addQuestionService } from '@/apis/question'
+import { addQuestionService, getQuestionDetailService,editQuestionService } from '@/apis/question'
 
 const visibleDrawer = ref(false)
 const formQuestion = reactive({ //表单数据，向后台发请求时的参数，动态绑定
+  questionId: '',
   title: '',
   difficulty: '',
   timeLimit: '',
@@ -63,13 +63,24 @@ const formQuestion = reactive({ //表单数据，向后台发请求时的参数�
   mainFunc: ''
 })
 
-function open(){
+const defaultCodeRef = ref()
+const mainFuncRef = ref()
+
+async function open(questionId){
   visibleDrawer.value = true
   //清空表单数据
   for (const key in formQuestion) {
     if(formQuestion.hasOwnProperty(key)){
       formQuestion[key] = ''
     }
+  }
+  if(questionId){ 
+    //根据题目id获取题目详情
+    const questionDetail = await getQuestionDetailService(questionId)
+    Object.assign(formQuestion, questionDetail.data) //将获取到的题目详情赋值给表单数据
+    //将获取到的题目详情赋值给代码编辑器
+    defaultCodeRef.value.setAceCode(formQuestion.defaultCode)
+    mainFuncRef.value.setAceCode(formQuestion.mainFunc)
   }
 }
 defineExpose({ //暴露给父组件的方法
@@ -107,13 +118,17 @@ async function onSubmit() {
     ElMessage.error(errorMessage);
     return false
   }
-  const fd = new FormData()
-  for (let key in formQuestion) {
-    fd.append(key, formQuestion[key])
-  }
-  await addQuestionService(fd)
-  emit('success') //触发添加成功的事件
+  
+  if(formQuestion.questionId){
+  //发起的是编辑题目请求
+  await editQuestionService(formQuestion)
+  ElMessage.success('编辑成功')
+  emit('success', 'edit') //触发编辑成功的事件
+  }else{ 
+  await addQuestionService(formQuestion)
   ElMessage.success('添加成功')
+  emit('success', 'add') //触发添加成功的事件
+  }
   visibleDrawer.value = false
 }
 

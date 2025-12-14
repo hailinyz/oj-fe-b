@@ -12,6 +12,16 @@
 	import "ace-builds/src-noconflict/mode-java"
 	import "ace-builds/src-noconflict/theme-eclipse"
 	import "ace-builds/src-noconflict/ext-language_tools";
+
+
+	function setAceCode(content) {
+		editor.setValue(content);
+	}
+	defineExpose({
+		setAceCode
+	})
+
+
 	// 定义选项
 	const options = {
 		theme: `ace/theme/eclipse`,

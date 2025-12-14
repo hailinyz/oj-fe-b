@@ -26,10 +26,12 @@
     <el-table-column prop="createName" label="创建人" width="140px" />
     <el-table-column prop="createTime" label="创建时间" width="180px" />
     <el-table-column label="操作" width="100px" fixed="right">
-        <el-button type="text">编辑
+        <template #default="{ row }"> <!-- 这个插槽是为了获取题目id -->
+        <el-button type="text" @Click="onEdit(row.questionId)">编辑
         </el-button>
-        <el-button type="text" class="red">删除
+        <el-button type="text" class="red" @Click="onDelete(row.questionId)">删除
         </el-button>
+      </template>
     </el-table-column>
   </el-table>
   <!-- 分页器 -->
@@ -47,13 +49,41 @@
 <script setup>
 import { Plus } from "@element-plus/icons-vue"
 import Selector from "@/components/questionSelector.vue"
-import { getQuestionListService } from "@/apis/question"
+import { getQuestionListService , delQuestionService} from "@/apis/question"
 import { reactive, ref } from "vue"
 import QuetionDrawer from "@/components/QuetionDrawer.vue"
 
-function onSuccess(){
-  //重新到1页
-  params.pageNum = 1
+async function onDelete(questionId){
+  try {
+    await ElMessageBox.confirm(
+      '确定要删除这道题目吗？',
+      '删除确认',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }
+    )
+    await delQuestionService(questionId)
+    ElMessage.success('删除成功')
+    params.pageNum = 1
+    getQuestionList()
+  } catch {
+    // 用户点击取消，不做任何操作
+  }
+  //重新获取题目列表
+  getQuestionList()
+}
+
+async function onEdit(questionId){
+  questionDrawerRef.value.open(questionId)
+}
+
+function onSuccess(service){
+  if(service === 'add'){
+      //重新到1页
+    params.pageNum = 1
+  }
   //重新获取题目列表
   getQuestionList()
   
