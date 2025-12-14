@@ -3,6 +3,9 @@ import { getToken, removeToken } from './cookie'
 import router from '@/router'
 
 
+
+//请求头的统一设置
+axios.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8';
 //不同的功能，通过axios请求不同的接口
 const service = axios.create({
   baseURL: "/dev-api",
