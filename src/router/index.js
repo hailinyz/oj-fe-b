@@ -7,11 +7,11 @@ const router = createRouter({
     {
       path: '/oj/login',
       name: 'login',
-      component: () => import('@/views/Login.vue'),
+      component: () => import('@/views/Login.vue')
     },
     {
-      path: "/",
-      redirect: '/oj/login',
+      path:"/",
+      redirect:'/oj/login',
     },
     {
       path: '/oj/layout',
@@ -21,40 +21,45 @@ const router = createRouter({
         {
           path: 'question',
           name: 'question',
-          component: () => import('@/views/Question.vue'),
+          component: () => import('@/views/Question.vue')
         },
         {
           path: 'exam',
           name: 'exam',
-          component: () => import('@/views/Exam.vue'),
+          component: () => import('@/views/Exam.vue')
+        },
+        {
+          path: 'updateExam',
+          name: 'updateExam',
+          component: () => import('@/views/UpdateExam.vue')
         },
         {
           path: 'cuser',
           name: 'cuser',
-          component: () => import('@/views/Cuser.vue'),
-        },
+          component: () => import('@/views/Cuser.vue')
+        }
       ]
-    },
-  ],
+    }
+  ]
 })
 
 router.beforeEach((to, from, next) => {
-    if (getToken()) {
-        /* has token*/
-        if (to.path === '/oj/login') {
-            next({ path: '/oj/layout' })
-        } else {
-            next()
-        }
+  if (getToken()) {  //已经登陆过
+    /* has token*/
+    if (to.path === '/oj/login') {
+      next({ path: '/oj/layout/question' })
     } else {
-        if (to.path !== '/oj/login') {
-            next({
-                path:'/oj/login'
-            })
-        } else {
-            next()
-        }
+      next()
     }
+  } else {
+    if (to.path !== '/oj/login') {
+      next({path:'/oj/login'})
+    } else {
+      next()
+    }
+  }
 })
 
 export default router
+
+

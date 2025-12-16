@@ -144,19 +144,63 @@ async function onEdit(examId) {
 }
 
 async function onDelete(examId) {
-  await delExamService(examId)
-  params.pageNum = 1
-  getExamList()
+  try {
+    await ElMessageBox.confirm(
+      '确定要删除这场竞赛吗？',
+      '删除确认',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }
+    )
+    await delExamService(examId)
+    params.pageNum = 1
+    getExamList()
+  } catch {
+    // 用户点击取消，不做任何操作
+    return
+  }
+
 }
 
 async function publishExam(examId) {
-  await publishExamService(examId)
-  getExamList()
+  try {
+    await ElMessageBox.confirm(
+      '确定要发布这场竞赛吗？',
+      '发布确认',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }
+    )
+    await publishExamService(examId)
+    getExamList()
+  } catch {
+    // 用户点击取消，不做任何操作
+    return
+  }
+
 }
 
 async function cancelPublishExam(examId) {
-  await cancelPublishExamService(examId)
-  getExamList()
+  try {
+    await ElMessageBox.confirm(
+      '确定要撤销发布这场竞赛吗？',
+      '撤销发布确认',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }
+    )
+    await cancelPublishExamService(examId)
+    getExamList()
+  } catch {
+    // 用户点击取消，不做任何操作
+    return
+  }
 }
 
 </script>
