@@ -35,10 +35,10 @@
 
 
 <script setup>
-import { ref } from 'vue'
 import { loginService } from '@/apis/suser';
-import  router  from '@/router';
+import router from '@/router';
 import { setToken } from '@/utils/cookie';
+import { ref } from 'vue';
 
 const userAccount = ref('')
 const password = ref('')
@@ -47,7 +47,7 @@ async function loginFun(){
   try{
     const loginResult = await loginService(userAccount.value, password.value)
     console.log("登录结果: ", loginResult);
-    router.push('/oj/layout')
+    router.push('/oj/layout/question')
     setToken(loginResult.data)
   }catch(error) {
     console.log("登录结果: ", error);
